@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+
+  <!-- We need to introduce the FlatHashMapPolicy type here before we use it below. -->
+  <Type Name="absl::container_internal::FlatHashMapPolicy&lt;*,*&gt;"/>
+
+  <Type Name="absl::flat_hash_map&lt;*,*,*,*,*&gt;">
+    <DisplayString Condition="settings_.value.size_ == 0">empty</DisplayString>
+    <DisplayString>{{ size={settings_.value.size_} }}</DisplayString>
+    <Expand>
+      <Item Name="[size]" ExcludeView="simple">settings_.value.size_</Item>
+      <Item Name="[capacity]" ExcludeView="simple">settings_.value.capacity_</Item>
+      <CustomListItems MaxItemsPerView="5000">
+        <Variable Name="iSlot" InitialValue="0" />
+        <Size>settings_.value.size_</Size>
+        <Loop>
+          <If Condition="settings_.value.control_[iSlot] &gt;= 0">
+            <Item>((absl::container_internal::FlatHashMapPolicy&lt;$T1,$T2&gt;::slot_type*)settings_.value.slots_)[iSlot].value</Item>
+          </If>
+          <Exec>iSlot++</Exec>
+          <Break Condition="iSlot == settings_.value.capacity_" />
+        </Loop>
+      </CustomListItems>
+    </Expand>
+  </Type>
+
+  <Type Name="absl::container_internal::FlatHashSetPolicy&lt;*&gt;"/>
+
+  <Type Name="absl::flat_hash_set&lt;*,*,*,*&gt;">
+    <DisplayString Condition="settings_.value.size_ == 0">empty</DisplayString>
+    <DisplayString>{{ size={settings_.value.size_} }}</DisplayString>
+    <Expand>
+      <Item Name="[size]" ExcludeView="simple">settings_.value.size_</Item>
+      <Item Name="[capacity]" ExcludeView="simple">settings_.value.capacity_</Item>
+      <CustomListItems MaxItemsPerView="5000">
+        <Variable Name="iSlot" InitialValue="0" />
+        <Size>settings_.value.size_</Size>
+        <Loop>
+          <If Condition="settings_.value.control_[iSlot] &gt;= 0">
+            <Item>((absl::container_internal::FlatHashSetPolicy&lt;$T1&gt;::slot_type*)settings_.value.slots_)[iSlot]</Item>
+          </If>
+          <Exec>iSlot++</Exec>
+          <Break Condition="iSlot == settings_.value.capacity_" />
+        </Loop>
+      </CustomListItems>
+    </Expand>
+  </Type>
+
+  <Type Name="absl::Span&lt;*&gt;">
+    <Intrinsic Name="data" Expression="ptr_" />
+    <Intrinsic Name="size" Expression="len_" />
+    <Intrinsic Name="size_bytes" Expression="len_ * sizeof(element_type)" />
+    <DisplayString>{{ size={size()} }}</DisplayString>
+    <Expand>
+      <ArrayItems>
+        <Size>size()</Size>
+        <ValuePointer>data()</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+
+</AutoVisualizer>
